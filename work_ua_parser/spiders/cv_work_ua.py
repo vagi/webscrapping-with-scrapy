@@ -9,5 +9,5 @@ class CvWorkUaSpider(scrapy.Spider):
 
     def parse(self, response):
         for item in response.css('div#pjax-resume-list div.card.resume-link'):
-            print(item.css('h2 a::title').get())
+            print(item.css('h2 a::text').get())
         

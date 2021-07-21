@@ -9,5 +9,18 @@ class CvWorkUaSpider(scrapy.Spider):
 
     def parse(self, response):
         for item in response.css('div#pjax-resume-list div.card.resume-link'):
-            print(item.css('h2 a::text').get())
+
+            result = {
+                'position': item.css('h2 > a::text').get(),
+                'name': item.css('div > b::text').get(),
+                'age': item.css('div > span:nth-child(4)::text').get(),
+
+            }
+
+            salary = item.css('h2 span.nowrap::text').get()
+
+            if salary:
+                result['salary'] = float(salary.replace(' грн', ''))
+
+            yield result
         

@@ -2,6 +2,7 @@ import scrapy
 from protego import Protego
 
 
+
 class CvWorkUaSpider(scrapy.Spider):
     name = 'cv_work_ua'
     allowed_domains = ['work.ua']
@@ -13,13 +14,17 @@ class CvWorkUaSpider(scrapy.Spider):
             # Getting url link for each candidacy's card
             card_details_uri = item.css('h2 > a::attr(href)').get()
 
+            # Getting and cleaning age of a candidacy
+            age_raw = item.css('div span:nth-child(4)::text').get()[:2]
+            age = int(age_raw) if age_raw.strip().isdigit() else None
+
             # Building a dictionary with collected inforamtion
             result = {
-                'position': item.css('h2 > a::text').get(),
                 'full_name': item.css('div > b::text').get(),
+                'position': item.css('h2 > a::text').get(),
                 # remove chars in age /'age': '18\xa0років'/ or process it before writing in csv file
-                'age': item.css('div span:nth-child(4)::text').get(),
-                'link': card_details_uri
+                'age': age,
+                'link': card_details_uri,
             }
 
             # Remove salary once test is completed
@@ -50,4 +55,6 @@ class CvWorkUaSpider(scrapy.Spider):
         response.meta['result']['description'] = header + ': ' + description
 
         yield response.meta['result']
+
+
         
